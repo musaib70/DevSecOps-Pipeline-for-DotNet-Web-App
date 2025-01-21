@@ -1,186 +1,610 @@
-# .NET - Demo Web Application
+# DevSecOps Pipeline for a DotNet Web App 🌻
 
-This is a simple .NET web app using the new minimal hosting model, and Razor pages. It was created from the `dotnet new webapp` template and modified adding custom APIs, Bootstrap v5, Microsoft Identity and other packages/features.
+## Below is the Application Source code for this project
 
-The app has been designed with cloud native demos & containers in mind, in order to provide a real working application for deployment, something more than "hello-world" but with the minimum of pre-reqs. It is not intended as a complete example of a fully functioning architecture or complex software design.
+[![DevOps-Project-24: DotNet Monitoring](https://img.shields.io/badge/Project-DotNet%20Monitoring-brightgreen)](https://github.com/NotHarshhaa/DevOps-Projects/tree/master/DevOps-Project-24/DotNet-monitoring)
 
-Typical uses would be deployment to Kubernetes, demos of Docker, CI/CD (build pipelines are provided), deployment to cloud (Azure) monitoring, auto-scaling
+![](<https://miro.medium.com/v2/resize:fit:700/0*lhbz9vRWnbRl4xVS>)
 
-The app has several basic pages accessed from the top navigation menu, some of which are only lit up when certain configuration variables are set (see 'Optional Features' below):
+We will be deploying a .NET-based application. This is an everyday use case scenario used by several organizations. We will be using Jenkins as a CICD tool and deploying our application on a Docker Container and Kubernetes cluster. Hope this detailed blog is useful.
 
-- **Info** - Will show system & runtime information, and will also display if the app is running from within a Docker container and Kubernetes.
-- **Tools** - Some tools useful in demos, such a forcing CPU load (for autoscale demos), and error/exception pages for use with App Insights or other monitoring tool.
-- **Monitoring** - Displays realtime CPU load and memory working set charts, fetched from an REST API and displayed using chart.js
-- **Weather** - (Optional) Gets the location of the client page (with HTML5 Geolocation). The resulting location is used to fetch a weather forecast from the [OpenWeather API](https://openweathermap.org/)
-- **User Account** - (Optional) When configured with Azure AD (application client id and secret) user login button will be enabled, and an user-account details page enabled, which calls the Microsoft Graph API
+This project shows the detailed metric i.e. CPU Performance of our instance where this project is launched.
 
-![screen](https://user-images.githubusercontent.com/14982936/71717446-0bc47400-2e10-11ea-8db2-1db5b991d566.png)
-![screen](https://user-images.githubusercontent.com/14982936/71717448-0bc47400-2e10-11ea-8bf0-5115d4c8c4a4.png)
-![screen](https://user-images.githubusercontent.com/14982936/71717426-fea78500-2e0f-11ea-881f-ad9bd8adbfae.png)
+## **Steps:-**
 
-# Status
+**Step 1** — Create an Ubuntu T2 Large Instance with 30GB storage
 
-![](https://img.shields.io/github/last-commit/benc-uk/dotnet-demoapp) ![](https://img.shields.io/github/release-date/benc-uk/dotnet-demoapp) ![](https://img.shields.io/github/v/release/benc-uk/dotnet-demoapp) ![](https://img.shields.io/github/commit-activity/y/benc-uk/dotnet-demoapp)
+**Step 2** — Install Jenkins, Docker and Trivy. Create a Sonarqube Container using Docker.
 
-Live instances:
+**Step 3** — Install Plugins like JDK, Sonarqube Scanner
 
-[![](https://img.shields.io/website?label=Hosted%3A%20Kubernetes&up_message=online&url=https%3A%2F%2Fdotnet-demoapp.kube.benco.io%2F)](https://dotnet-demoapp.kube.benco.io/)
+**Step 4** — Install OWASP Dependency Check Plugins
 
-# Running and Testing Locally
+**Step 5** — Configure Sonar Server in Manage Jenkins
 
-### Pre-reqs
+**Step 6**— Create a Pipeline Project in Jenkins using Declarative Pipeline
 
-- Be using Linux, WSL or MacOS, with bash, make etc
-- [.NET 6](https://docs.microsoft.com/en-us/dotnet/core/install/linux) - for running locally, linting, running tests etc
-- [Docker](https://docs.docker.com/get-docker/) - for running as a container, or image build and push
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux) - for deployment to Azure
+**Step 7** — Install make package
 
-Clone the project to any directory where you do development work
+**Step 8**— Docker Image Build and Push
 
-```
-git clone https://github.com/benc-uk/dotnet-demoapp.git
-```
+**Step 9** — Deploy the image using Docker
 
-### Makefile
+**Step 10**—Access the Real World Application
 
-A standard GNU Make file is provided to help with running and building locally.
+**Step 11**— Kubernetes Set Up
 
-```txt
-$ make
+**Step 12** — Terminate the AWS EC2 Instance
 
-help                 💬 This help message
-lint                 🔎 Lint & format, will not fix but sets exit code on error
-image                🔨 Build container image from Dockerfile
-push                 📤 Push container image to registry
-run                  🏃‍ Run locally using Dotnet CLI
-deploy               🚀 Deploy to Azure Container App
-undeploy             💀 Remove from Azure
-test                 🎯 Unit tests with xUnit
-test-report          🤡 Unit tests with xUnit & output report
-clean                🧹 Clean up project
-```
+# **References**
 
-Make file variables and default values, pass these in when calling `make`, e.g. `make image IMAGE_REPO=blah/foo`
+# **Now, lets get started and dig deeper into each of these steps :-**
 
-| Makefile Variable | Default                |
-| ----------------- | ---------------------- |
-| IMAGE_REG         | ghcr<span>.</span>io   |
-| IMAGE_REPO        | benc-uk/dotnet-demoapp |
-| IMAGE_TAG         | latest                 |
-| AZURE_RES_GROUP   | demoapps               |
-| AZURE_REGION      | northeurope            |
-| AZURE_APP_NAME    | dotnet-demoapp         |
+**Step 1** — Launch an AWS T2 Large Instance. Use the image as Ubuntu. You can create a new key pair or use an existing one. Enable HTTP and HTTPS settings in the Security Group.
 
-Web app will listen on the usual Kestrel port of 5000, but this can be changed by setting the `ASPNETCORE_URLS` environmental variable or with the `--urls` parameter ([see docs](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-6.0)).
+![](<https://miro.medium.com/v2/resize:fit:700/0*O7OTR8slamA50Wgr.png>)
 
-# Containers
+**Step 2** — Install Jenkins, Docker and Trivy
 
-Public container image is [available on GitHub Container Registry](https://github.com/users/benc-uk/packages/container/package/dotnet-demoapp).
+**2A — To Install Jenkins**
 
-Run in a container with:
+Connect to your console, and enter these commands to Install Jenkins
 
-```bash
-docker run --rm -it -p 5000:5000 ghcr.io/benc-uk/dotnet-demoapp:latest
+```c
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+sudo apt update
+sudo apt install openjdk-17-jdk
+sudo apt install openjdk-17-jre
+
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
 ```
 
-Should you want to build your own container, use `make image` and the above variables to customise the name & tag.
+Once Jenkins is installed, you will need to go to your AWS EC2 Security Group and open Inbound Port 8080, since Jenkins works on Port 8080.
 
-## Kubernetes
+![](<https://miro.medium.com/v2/resize:fit:700/0*LwcZZbzeA-C2wTqx.png>)
 
-The app can easily be deployed to Kubernetes using Helm, see [deploy/kubernetes/readme.md](deploy/kubernetes/readme.md) for details
+Now, grab your Public IP Address
 
-# GitHub Actions CI/CD
+```c
+<EC2 Public IP Address:8080>
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
 
-A set of CI and CD release GitHub Actions workflows are provided in `.github/workflows/`, automated builds are run in GitHub hosted runners
+Unlock Jenkins using an administrative password and install the required plugins.
 
-[![](https://img.shields.io/github/workflow/status/benc-uk/dotnet-demoapp/CI%20Build%20App)](https://github.com/benc-uk/dotnet-demoapp/actions?query=workflow%3A%22CI+Build+App%22) [![](https://img.shields.io/github/workflow/status/benc-uk/dotnet-demoapp/CD%20Release%20-%20AKS?label=release-kubernetes)](https://github.com/benc-uk/dotnet-demoapp/actions?query=workflow%3A%22CD+Release+-+AKS%22) [![](https://img.shields.io/github/last-commit/benc-uk/dotnet-demoapp)](https://github.com/benc-uk/dotnet-demoapp/commits/master)
+![](<https://miro.medium.com/v2/resize:fit:700/0*Kx6RTKAtbvrbb9xw.png>)
 
-# Optional Features
+Jenkins will now get installed and install all the libraries.
 
-The app will start up and run with zero configuration, however the only features that will be available will be the *Info*, *Tools* & *Monitoring* views. The following optional features can be enabled:
+![](<https://miro.medium.com/v2/resize:fit:700/0*1vBCl0k1egywfmUs.png>)
 
-### Application Insights
+Jenkins Getting Started Screen
 
-Enable this by setting `ApplicationInsights__InstrumentationKey`
+![](<https://miro.medium.com/v2/resize:fit:700/0*13LX3qVtgaKk2qMj.png>)
 
-The app has been instrumented with the Application Insights SDK, it will however need to be configured to point to your App Insights instance/workspace. All requests will be tracked, as well as dependant calls to other APIs, exceptions & errors will also be logged
+**2B — Install Docker**
 
-[This article](https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core) has more information on monitoring .NET with App Insights
+```c
+sudo apt-get update
+sudo apt-get install docker.io -y
+sudo usermod -aG docker $USER
+sudo chmod 777 /var/run/docker.sock 
+sudo docker ps
+```
 
-If running locally, and using appsettings.Development.json, this can be configured as follows
+After the docker installation, we create a sonarqube container (Remember added 9000 port in the security group)
 
-```json
-"ApplicationInsights": {
-  "InstrumentationKey": "<key value here>"
+![](<https://miro.medium.com/v2/resize:fit:700/0*IpH7z19f_OwmC2LS.png>)
+
+```c
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+```
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*8xbXhpkCePWV5y9e.png>)
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*XfaIUB3jOyoVszR-.png>)
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*yo4nGGCCWjo1RvxL.png>)
+
+**2C — Install Trivy**
+
+```c
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+
+sudo apt-get update
+
+sudo apt-get install trivy -y
+```
+
+**Step 3** — Install Plugins like JDK, Sonarqube Scanner, OWASP Dependency Check,
+
+Goto Manage Jenkins →Plugins → Available Plugins →
+
+Install below plugins
+
+1 → Eclipse Temurin Installer (Install without restart)
+
+2 → SonarQube Scanner (Install without restart)
+
+Goto Manage Jenkins →Plugins → Available Plugins →
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*cbVykPMNxn3tw_PU>)
+
+**3B — Configure Java in Global Tool Configuration**
+
+Goto Manage Jenkins → Tools → Install JDK17→ Click on Apply and Save
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*zYdw40z-5gw_42w->)
+
+j
+
+**Step 4** — GotoDashboard → Manage Jenkins → Plugins → OWASP Dependency-Check. Click on it and install without restart.
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*KAvm1lIo5q_Zabf_.png>)
+
+First, we configured Plugin and next we have to configure Tool
+
+Goto Dashboard → Manage Jenkins → Tools →
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*K8g-d8eTm0RUD_p-.png>)
+
+Click on apply and Save here.
+
+Grab the Public IP Address of your EC2 Instance, Sonarqube works on Port 9000, sp &lt;Public IP&gt;:9000. Goto your Sonarqube Server. Click on Administration → Security → Users → Click on Tokens and Update Token → Give it a name → and click on Generate Token
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*3gBiIjfApFZu3W_S>)
+
+Click on Update Token
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*taDsfS0qRoAM_fiw>)
+
+Create a token with a name and generate
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*uSmQWIn8kYsHd57g>)
+
+Copy this Token
+
+Goto Dashboard → Manage Jenkins → Credentials → Add Secret Text. It should look like this
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*DPe8Nn-x1TBse7xE>)
+
+You will this page once you click on create
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*tA4eDhtMM5BMEx6s>)
+
+Now, go to Dashboard → Manage Jenkins → Configure System
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*Pc0urDY37r558t9U>)
+
+Click on Apply and Save
+
+The Configure System option is used in Jenkins to configure different server
+
+Global Tool Configuration is used to configure different tools that we install using Plugins
+
+We will install a sonar scanner in the tools.
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*8Hkj-gN9py3coePT>)
+
+In the Sonarqube Dashboard add a quality gate also
+
+Administration → Configuration →Webhooks
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*eOjYv9PUXdHxfY4I>)
+
+Click on Create
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*nVNNh0lKbGfC0mwF>)
+
+Add details
+
+```c
+#in url section of quality gate
+<http://jenkins-public-ip:8080>/sonarqube-webhook/
+```
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*JMqx0BB33EMUfKUiGRBTFg.png>)
+
+Click on Apply and Save here.
+
+**Step 6** — Create a Pipeline Project in Jenkins using Declarative Pipeline
+
+```c
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+    }
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Checkout From Git') {
+            steps {
+                git branch: 'master', url: 'https://github.com/NotHarshhaa/DevOps-Projects/tree/master/DevOps-Project-24/DotNet-monitoring'
+            }
+        }
+        stage("Sonarqube Analysis ") {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Dotnet-Webapp \
+                        -Dsonar.projectKey=Dotnet-Webapp"""
+                }
+            }
+        }
+        stage("quality gate") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage("TRIVY File scan") {
+            steps {
+                sh "trivy fs . > trivy-fs_report.txt"
+            }
+        }
+        stage("OWASP Dependency Check") {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --format XML ', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+    }
 }
 ```
 
-### Weather Details
+Click on Build now, you will see the stage view like this
 
-Enable this by setting `Weather__ApiKey`
+![](<https://miro.medium.com/v2/resize:fit:700/1*0FJjDR-Np_hLdiiC0UblkQ.png>)
 
-This will require a API key from OpenWeather, you can [sign up for free and get one here](https://openweathermap.org/). The page uses a browser API for geolocation to fetch the user's location.
-However, the `geolocation.getCurrentPosition()` browser API will only work when the site is served via HTTPS or from localhost. As a fallback, weather for London, UK will be show if the current position can not be obtained
+You will see that in status, a graph will also be generated and Vulnerabilities
 
-If running locally, and using appsettings.Development.json, this can be configured as follows
+![](<https://miro.medium.com/v2/resize:fit:700/1*dREJwJgJf9xO5vsKTAV6rA.png>)
 
-```json
-"Weather": {
-  "ApiKey": "<key value here>"
+To see the report, you can go to Sonarqube Server and go to Projects.
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*SzPyG21DLWk-b8DvZJTuLg.png>)
+
+**Step 7** — Install make package
+
+```c
+sudo apt install make
+# to check version install or not
+make -v
+```
+
+**Step 8** — Docker Image Build and Push
+
+We need to install the Docker tool in our system, Goto Dashboard → Manage Plugins → Available plugins → Search for Docker and install these plugins
+
+* `Docker`
+
+* `Docker Commons`
+
+* `Docker Pipeline`
+
+* `Docker API`
+
+* `docker-build-step`
+
+and click on install without restart
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*85KxZfG4p9p_BQIa>)
+
+Now, goto Dashboard → Manage Jenkins → Tools →
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*GIQZSKzfoSllosGE>)
+
+Add DockerHub Username and Password under Global Credentials
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*QDg2NMlXXQDwFGCyFeMXbA.png>)
+
+In the makefile, we already defined some conditions to build, tag and push images to dockerhub.
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*Wwaph1bpJ8A_Wcbt>)
+
+that’s why we are using make image and make a push in the place of docker build -t and docker push
+
+Add this stage to Pipeline Script
+
+```c
+stage("Docker Build & tag"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                       sh "make image"
+                    }
+                }
+            }
+        }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image NotHarshhaa/dotnet-monitoring:latest > trivy.txt" 
+            }
+        }
+        stage("Docker Push"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                       sh "make push"
+                    }
+                }
+            }
+        }
+```
+
+When all stages in docker are successfully created then you will see the result You log in to Dockerhub, and you will see a new image is created
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*JMqx0BB33EMUfKUiGRBTFg.png>)
+
+**Stage view**
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*FKlA-GM4lHtoGiZi>)
+
+**Step 9** — Deploy the image using Docker
+
+Add this stage to your pipeline syntax
+
+```c
+stage("Deploy to container"){
+            steps{
+                sh "docker run -d --name dotnet -p 5000:5000 NotHarshhaa/dotnet-monitoring:latest"
+            } 
+        }
+```
+
+You will see the Stage View like this,
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*zle0Gb2SQ0RL-293>)
+
+(Add port 5000 to Security Group)
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*vQuoGgXR2lYKPXT8.png>)
+
+And you can access your application on Port 5000. This is a Real World Application that has all Functional Tabs.
+
+**Step 10** — Access the Real World Application
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*dIreZ5hxmGS4atXzxTvyGQ.png>)
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*KU_P-XkW7K5p5aoNVzhWGw.png>)
+
+**Step 11** — Kubernetes Set Up
+
+Take-Two Ubuntu 20.04 instances one for k8s master and the other one for worker.
+
+Install Kubectl on Jenkins machine as well.
+
+```c
+sudo apt update
+sudo apt install curl
+curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
+```
+
+## **Part 1 — — — — — Master Node — — — — — —**
+
+```c
+sudo su
+hostname master
+bash
+clear
+```
+
+## **— — — — — Worker Node — — — — — —**
+
+```c
+sudo su
+hostname worker
+bash
+clear
+```
+
+## **Part 2 — — — — — — Both Master & Node — — — — —**
+
+```c
+sudo apt-get update 
+
+sudo apt-get install -y docker.io
+sudo usermod –aG docker Ubuntu
+newgrp docker
+sudo chmod 777 /var/run/docker.sock
+
+sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+sudo tee /etc/apt/sources.list.d/kubernetes.list <<EOF
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+sudo apt-get update
+
+sudo apt-get install -y kubelet kubeadm kubectl
+
+sudo snap install kube-apiserver
+```
+
+## **Part 3 — — — — — — — — Master — — — — — — — -**
+
+```c
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+# in case your in root exit from it and run below commands
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
+
+## **— — — — — Worker Node — — — — — —**
+
+```c
+sudo kubeadm join <master-node-ip>:<master-node-port> --token <token> --discovery-token-ca-cert-hash <hash>
+```
+
+Now, goto the Master Node
+
+```c
+cd .kube/
+cat config
+```
+
+Copy the config file to Jenkins master or the local file manager and save it
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*VypNKtvIVQBOseQfXZTM3Q.png>)
+
+copy it and save it in documents or another folder save it as secret-file.txt
+
+Install Kubernetes Plugin, Once it’s installed successfully
+
+goto manage Jenkins → manage credentials → Click on Jenkins global → add credentials
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*Q6TmsbXxwe0z-vAD>)
+
+Install Kubernetes Plugin, Once it’s installed successfully
+
+![](<https://miro.medium.com/v2/resize:fit:700/0*yVlpodOoM5rKje61>)
+
+Goto manage Jenkins → manage credentials → Click on Jenkins global → add credentials
+
+The final step to deploy on the Kubernetes cluster, add this stage to the pipeline.
+
+```go
+stage('Deploy to k8s'){
+            steps{
+                dir('K8S') {
+                  withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                    sh 'kubectl apply -f deployment.yaml'    
+                   }
+                }   
+            }
+        }
+```
+
+Before starting a new build remove Old containers.
+
+Output
+
+```c
+kubectl get svc
+#copy service port 
+<worker-ip:svc port>
+```
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*dIreZ5hxmGS4atXzxTvyGQ.png>)
+
+![](<https://miro.medium.com/v2/resize:fit:700/1*KU_P-XkW7K5p5aoNVzhWGw.png>)
+
+**Step 12** — Terminate the AWS EC2 Instance
+
+Lastly, do not forget to terminate the AWS EC2 Instance.
+
+**The complete pipeline script**
+
+```c
+pipeline{
+    agent any
+    tools{
+        jdk 'jdk17'
+    }
+    environment {
+        SCANNER_HOME=tool 'sonar-scanner'
+    }
+    stages {
+        stage('clean workspace'){
+            steps{
+                cleanWs()
+            }
+        }
+        stage('Checkout From Git'){
+            steps{
+                git branch: 'master', url: 'https://github.com/NotHarshhaa/DevOps-Projects/tree/master/DevOps-Project-24/DotNet-monitoring'
+            }
+        }
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Dotnet-Webapp \
+                    -Dsonar.projectKey=Dotnet-Webapp '''
+                }
+            }
+        }
+        stage("quality gate"){
+           steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                }
+            } 
+        }
+        stage("TRIVY File scan"){
+            steps{
+                sh "trivy fs . > trivy-fs_report.txt" 
+            }
+        }
+        stage("OWASP Dependency Check"){
+            steps{
+                dependencyCheck additionalArguments: '--scan ./ --format XML ', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        stage("Docker Build & tag"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                       sh "make image"
+                    }
+                }
+            }
+        }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image NotHarshhaa/dotnet-monitoring:latest > trivy.txt" 
+            }
+        }
+        stage("Docker Push"){
+            steps{
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
+                       sh "make push"
+                    }
+                }
+            }
+        }
+        stage("Deploy to container"){
+            steps{
+                sh "docker run -d --name dotnet -p 5000:5000 writetoritika/dotnet-monitoring:latest"
+            } 
+        }
+        stage('Deploy to k8s'){
+            steps{
+                dir('K8S') {
+                  withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                    sh 'kubectl apply -f deployment.yaml'    
+                   }
+                }   
+            }
+        }
+    }
 }
 ```
 
-### User Authentication with Azure AD and Microsoft Graph
+---
 
-Enable this feature by setting several 'AzureAd' environmental variables, once enabled, a 'Login' button will be displayed on the main top nav bar.
-
-This uses [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) which is a library allowing .NET web apps to use the Microsoft Identity Platform (i.e. Azure AD v2.0 endpoint)
-
-In addition the user account page shows details & photo retrieved from the Microsoft Graph API
-
-You will need to register an app in your Azure AD tenant. [See this guide](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app). Make sure you enable the options
-
-- Enable the app for _"Accounts in any organizational directory and personal Microsoft accounts"_
-- Add _'Web platform'_ for authentication
-- Ensure your Redirect URI ends with `/signin-oidc`
-- Enable _"Access Tokens"_ and _"ID Tokens"_ in the authentication settings.
-- Add a new client secret, and make a note of it's value
-
-Environmental Variables:
-
-- `AzureAd__ClientId`: You app's client id
-- `AzureAd__ClientSecret`: You app's client secret
-- `AzureAd__Instance`: Set to `https://login.microsoftonline.com/`
-- `AzureAd__TenantId`: Set to `common`
-
-If running locally, and using appsettings.Development.json, this can be configured as follows
-
-```json
-"AzureAd": {
-  "Instance": "https://login.microsoftonline.com/",
-  "ClientId": "<change me>",
-  "ClientSecret": "<change me>",
-  "TenantId": "common",
-}
-```
-
-## Running in Azure - Container App
-
-If you want to deploy to an Azure Container App, a Bicep template is provided in the [deploy](deploy/) directory
-
-For a quick deployment, use `make deploy` which will create a resource group, the Azure Container App instance (with supporting resources) and deploy the latest image to it
-
-```bash
-make deploy
-```
-
-> Note. Azure Container App doesn't currently support HTTP header forwarding, so Azure AD sign-in will not work as it mis-redirects to the wrong URL
-
-# Updates
-
-- Nov 2021 - Large scale rewrite to .NET 6
-- Mar 2021 - Update to deployment, added dummy unit tests and makefile
-- Nov 2020 - Updated to .NET 5
-- Nov 2020 - New GitHub pipelines & container registry
-- Jun 2020 - Moved to NuGet for the Microsoft.Identity.Web
-- Jan 2020 - Rewritten from scratch
